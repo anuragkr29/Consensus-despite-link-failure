@@ -4,39 +4,60 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
 
 public class Communication {
 
-private static Process[] processArr;
-private static int messageDropNum;
-private static int numberOfProcesses;
-private static AtomicIntegerArray messageArr;
-private static AtomicInteger messageNum = new AtomicInteger(0);
-
-
-public Communication(Process[] processArr, int messageDropNum, int numberOfProcesses)
-{
-    this.processArr = processArr;
-    this.messageDropNum = messageDropNum;
-    this.numberOfProcesses = numberOfProcesses;
-    this.messageArr = new AtomicIntegerArray(numberOfProcesses);
-
-}
-
-public  void resetMessage(){
-    for (int i = 0 ; i < messageArr.length(); i++)
-        messageArr.set(i, 1);
+    private static Process[] processArr;
+    private static int messageDropNum;
+    private static int numberOfProcesses;
+    private static AtomicIntegerArray messageCounter;
+    private static AtomicInteger messageNum = new AtomicInteger(0);
+    
+    
+    public Communication(Process[] processArr, int messageDropNum, int numberOfProcesses)
+    {
+        this.processArr = processArr;
+        this.messageDropNum = messageDropNum;
+        this.numberOfProcesses = numberOfProcesses;
+        this.messageCounter = new AtomicIntegerArray(numberOfProcesses);
+        initCounters();
     }
+    
+    public  void initCounters(){
+        for (int i = 0 ; i < messageCounter.length(); i++)
+            messageCounter.set(i, 1);
+        }
 
 
 
-    public static synchronized void sendMessage(Message m,int receiver_id, int senderIndex){
-    int globalRoundNum = Round.getGlobalRoundNumber();
-    messageNum.set(messageArr.get(senderIndex) + (((numberOfProcesses-1))*senderIndex) + (globalRoundNum*(numberOfProcesses-1)*(numberOfProcesses)));
-    messageArr.getAndIncrement(senderIndex);
-    if(messageNum.get()%messageDropNum != 0) {
-        Process receiver = processArr[receiver_id];
-        send(m, receiver);
-    }
-    else
-        System.out.println("Dropping Message Number : " + messageNum.get());
+    public static synchronized void sendMessage(Message m,int senderIndex){
+
+        int globalRoundNum = Round.getGlobalRoundNumber();
+        if(globalRoundNum == 0)
+        {
+            messageNum.set(messageCounter.get(senderIndex) + (((numberOfProcesses-1))*senderIndex) + (globalRoundNum*(numberOfProcesses-1)*(numberOfProcesses)));
+//            System.out.println("Init Message Number : " + messageNum.get() + "for process : " + senderIndex);
+        }
+        else
+        {
+            messageNum.set(messageCounter.get(senderIndex) + ((numberOfProcesses-1)*(numberOfProcesses-1)));
+//            System.out.println("Init Message Number : " + messageNum.get() + "for process : " + senderIndex + " with counter : " + messageCounter.get(senderIndex));
+        }
+        messageCounter.set(senderIndex,messageNum.get());
+//        System.out.println("Process : " + senderIndex);
+        int i=0;
+        for(i=0;i<numberOfProcesses;i++)
+        {
+            if(i == senderIndex)
+                continue;
+            else if(messageNum.get()%messageDropNum != 0) {
+//                System.out.println("Generating Message Number : " + messageNum.get());
+                Process receiver = processArr[i];
+                send(m, receiver);
+            }
+            else
+                System.out.println("Dropping Message Number : " + messageNum.get());
+            messageCounter.getAndIncrement(senderIndex);
+            messageNum.set(messageCounter.get(senderIndex));
+        }
+//        System.out.println("Process : " + senderIndex + " sent : " + i);
     }
 
 

@@ -1,3 +1,5 @@
+import java.util.Arrays;
+import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -5,11 +7,19 @@ import java.util.concurrent.TimeUnit;
 public class Main {
 
     public static void main(String[] args) {
-        ReadFile fileReadObj = new ReadFile("input.dat");
+        Scanner s = new Scanner(System.in);
+        System.out.println("Enter the input file path : ");
+        ReadFile fileReadObj = new ReadFile(s.nextLine());
         int numberOfProcesses = fileReadObj.getNumberOfProcesses();
         int numberOfRounds = fileReadObj.getNumberOfRounds();
         int messageDropNum = fileReadObj.getmessageDropNum();
         int[] inputVal = fileReadObj.getInputVal();
+        System.out.println("--------- Input File read ----------");
+        System.out.println(" Number of Processes : " + numberOfProcesses);
+        System.out.println(" Number of rounds : " + numberOfRounds);
+        System.out.println(" Message to drop : Every " + messageDropNum + "th message.");
+        System.out.println(" Initial values : " + Arrays.toString(inputVal));
+        System.out.println("------------------------------------");
         Round r = new Round(numberOfProcesses);
         ExecutorService threadPool = Executors.newFixedThreadPool(numberOfProcesses);
         Process processArr[] = new Process[numberOfProcesses];
@@ -24,14 +34,13 @@ public class Main {
 
         int round = -1;
         System.out.println("Dropping every " + messageDropNum +  "th message");
-        while (round < numberOfRounds) {
+        while (round < numberOfRounds-1) {
             try {
                 if (Round.threadCount.get() == 0) {
                     round++;
                     Thread.currentThread().sleep(1000);
-                    channel.resetMessage();
                     r.nextRound(numberOfProcesses, round);
-                    System.out.println("Started round : " + (round));
+                    System.out.println("Started round : " + (round+1));
                 }
             } catch (Exception e) {
                 e.printStackTrace();

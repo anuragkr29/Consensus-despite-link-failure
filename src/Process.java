@@ -70,11 +70,10 @@ class Process implements Runnable {
             if (Round.round.get(this.index) == 100) {
                 int globalRoundNum = Round.getGlobalRoundNumber();
                 try {
-                    if(globalRoundNum <= numberOfRounds-1) {
+
                         if (globalRoundNum == 0 && this.index == 0) {
                             Random rand = new Random();
-                            //key = rand.nextInt(numberOfRounds-1) + 1;
-                            key = 7;
+                            key = rand.nextInt(numberOfRounds-1) + 1;
                         } else if (globalRoundNum != 0) {
                             this.processQueue();
                         }
@@ -82,17 +81,12 @@ class Process implements Runnable {
 
                         Message<Integer> toSend = new Message<>(this.key, this.inputVal, this.level);
                         Thread.sleep(1000);
-                        for (int i = 0; i < numberOfprocesses; i++)
-                        {
-                            if(i!=this.index)
-                            {
-                                Communication.sendMessage(toSend, i, this.index);
-                            }
+
+                        Communication.sendMessage(toSend, this.index);
+
+                        if(globalRoundNum == numberOfRounds-1) {
+                            this.processDecision();
                         }
-                    }
-                    else {
-                        this.processDecision();
-                    }
                 }
                 catch (InterruptedException e) {
                     e.printStackTrace();
