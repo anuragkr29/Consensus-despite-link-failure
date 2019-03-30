@@ -18,3 +18,13 @@ dropped at any round. These “counters” are NOT reset at the end of each roun
 At the end of executing the algorithm, each process should output its id, its decision value, and its level
 vector. Make sure that each process’s output is printed “in tact.” (One process’s output cannot be
 interleaved with that of another process’s output.)
+
+java version used :
+java version "1.8.0_171"
+Java(TM) SE Runtime Environment (build 1.8.0_171-b11)
+
+To  run the project : 
+1. Open the project in IntelliJ iDEA and run the main file
+2. From the command line : go to src and compile the main.java
+   Run main
+input.dat is the input file used
