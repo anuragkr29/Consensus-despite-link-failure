@@ -25,6 +25,7 @@ Java(TM) SE Runtime Environment (build 1.8.0_171-b11)
 
 To  run the project : 
 1. Open the project in IntelliJ iDEA and run the main file
-2. From the command line : go to src and compile the main.java
-   Run main
-input.dat is the input file used
+2. From the command line : 
+   - go to src and compile the main.java (javac main.java)
+   - Run main (java main)
+3. input.dat is the input file used
