@@ -33,22 +33,18 @@ public class Communication {
         if(globalRoundNum == 0)
         {
             messageNum.set(messageCounter.get(senderIndex) + (((numberOfProcesses-1))*senderIndex) + (globalRoundNum*(numberOfProcesses-1)*(numberOfProcesses)));
-//            System.out.println("Init Message Number : " + messageNum.get() + "for process : " + senderIndex);
         }
         else
         {
             messageNum.set(messageCounter.get(senderIndex) + ((numberOfProcesses-1)*(numberOfProcesses-1)));
-//            System.out.println("Init Message Number : " + messageNum.get() + "for process : " + senderIndex + " with counter : " + messageCounter.get(senderIndex));
         }
         messageCounter.set(senderIndex,messageNum.get());
-//        System.out.println("Process : " + senderIndex);
         int i=0;
         for(i=0;i<numberOfProcesses;i++)
         {
             if(i == senderIndex)
                 continue;
             else if(messageNum.get()%messageDropNum != 0) {
-//                System.out.println("Generating Message Number : " + messageNum.get());
                 Process receiver = processArr[i];
                 send(m, receiver);
             }
@@ -57,7 +53,6 @@ public class Communication {
             messageCounter.getAndIncrement(senderIndex);
             messageNum.set(messageCounter.get(senderIndex));
         }
-//        System.out.println("Process : " + senderIndex + " sent : " + i);
     }
 
 
